@@ -37,6 +37,7 @@ ws.on('connection',function(f){
     f.send(JSON.stringify(['username',user]))
     f.on('close',function(){
         users.splice(users.indexOf(user),1)
+        broadcast(JSON.stringify(['users',users]))
     })
     f.on('message',function(msg){
         array = new Uint8Array(msg);
