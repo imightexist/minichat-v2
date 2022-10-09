@@ -1,0 +1,154 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <style>
+        body{
+            overflow-y:hidden;
+            background-color:black
+        }
+        .users-pane {
+            /*border-radius: 10px;*/
+            padding-top:1px;
+            width: 19%;
+            position:relative;
+            left: 1%;
+            background-color: #2B2929;
+            font-size:20px;
+            height:80%;
+            overflow: auto
+        }
+        .message-pane {
+            /*border-radius: 10px;*/
+            padding-top: 1px;
+            width: 80%;
+            background-color: #2B2929;
+            height: 80%;
+            font-size:20px;
+            overflow: auto
+        }
+
+        .message-item {
+            border-radius: 5px;
+            font-size: 20px;
+            color: white;
+            list-style: none;
+            margin-top: 2px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .chat-menu {
+            position: fixed;
+            font-family:'Arial';
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .chat-menu-content {
+            background-color: #171717;
+            margin: 3% auto;
+            padding: 20px;
+            left: 0;
+            top: 0;
+            border: 1px solid #888;
+            width: 80%;
+            height:75%;
+            color: white
+        }
+
+        .chat-menu-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .chat-menu-close:hover,
+        .chat-menu-close:focus {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        let ws;
+        let username;
+        function rename(){
+                e = prompt("New username")
+                ws.send(JSON.stringify(['rename',e]))
+        }
+        window.onload = function(){
+            ws = new WebSocket("ws://" + window.location.host)
+            document.getElementById('chat-input').addEventListener('keyup',function(event){
+                if (event.key == 'Enter'){
+                    ws.send(JSON.stringify(['chat',document.getElementById('chat-input').value]))
+                    document.getElementById('chat-input').value = "";
+                }
+            })
+            ws.onclose = function(){
+                location.reload()
+            }
+            ws.onmessage = function(f){
+                msg = JSON.parse(f.data)
+                if (msg[0] == 'username'){
+                    document.getElementById('name').innerHTML = msg[1]
+                    username = msg[1]
+                }
+                if (msg[0] == 'users'){
+                    document.getElementById('users').innerHTML = ""
+                    msg[1].forEach(function(g){
+                        e = document.createElement('a')
+                        e.innerHTML = g;
+                        document.getElementById('users').appendChild(e)
+                        document.getElementById('users').appendChild(document.createElement('br'))
+                    })
+                }
+                if (msg[0] == 'chat'){
+                    e = document.createElement('a')
+                    e.innerHTML = msg[1];
+                    document.getElementById('chat').appendChild(e)
+                    document.getElementById('chat').appendChild(document.createElement('br'))
+                    document.getElementById('chat').scrollTo(0,document.getElementById('chat').scrollHeight);
+                }
+                if (msg[0] == 'logs'){
+                    msg[1].forEach(function(g){
+                        e = document.createElement('a')
+                        e.innerHTML = g;
+                        document.getElementById('chat').appendChild(e)
+                        document.getElementById('chat').appendChild(document.createElement('br'))
+                    })
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="chat-menu" class="chat-menu" style="z-index:4">
+        <div class="chat-menu-content">
+            <bold style="font-size:30px;font-family:'Arial';">Epic Experimental Chat :OOO</bold>
+            <span class="chat-menu-close" onclick="rename()" id="name">Rename</span>
+            <br><br><br>
+            <div id="chat" class="message-pane" style="display:inline-block;font-family:'Arial'">
+                <!--<li class="message-item" style="font-size:20px">Test</li>
+                <li class="message-item" style="font-size:20px">Test2</li>-->
+            </div>
+            <span id="users" class="users-pane" style="display:inline-block;font-family:'Arial'">
+                <!--<li class="message-item" style="font-size:20px">Test</li>
+                <li class="message-item" style="font-size:20px">Test2</li>-->
+            </span>
+            <br><br>
+            <input id="chat-input"
+                style="width:100%;font-family:Arial, Helvetica, sans-serif;background-color: #000314;border-color: #262629;color: white;font-size:20px"
+                placeholder="Message">
+        </div>
+    </div>
+</body>
+</html>
