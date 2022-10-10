@@ -14,6 +14,6 @@ This uses JSON.stringify to encode messages into string. Of course, that means J
 - ["chat",string] - send string
 ## Receive
 - ["username",name] - server assigned a username (also response to rename)
-- ["chat","<b>(user)</b>: (msg)"] - server sends html message
+- ["chat","&lt;b&gt;(user)&lt;/b&gt;: (msg)"] - server sends html message
 - ["logs",array] - gives array of html strings for logs
 - ["users",array] - gives array of strings of usernames
