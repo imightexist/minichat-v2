@@ -46,7 +46,11 @@ ws.on('connection',function(f){
             let char = String.fromCharCode(h);
             cmd += char
         });
-        cmd = JSON.parse(cmd);
+        try{
+            cmd = JSON.parse(cmd)
+        }catch(e){
+            cmd = []
+        }
 
         if (cmd[0] == 'chat'){
             chat.push('<b>' + user + '</b>: ' + escapeInput(cmd[1]));
