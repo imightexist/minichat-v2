@@ -1,6 +1,9 @@
 # minichat-v2
 minichat 2.0
 
+demo: https://incongruous-brindle-dew.glitch.me/<br>
+demo2: http://104.192.0.82:81/
+
 # Funny html element things
 - (img)url(/img) - display image url
 - (b)text(/b) - bold text
