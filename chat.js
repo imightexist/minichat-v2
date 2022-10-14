@@ -1,5 +1,6 @@
 const config = {
-    port: 81
+    port: 81,
+    file: "./log.json"
 }
 
 const express = require('express')
@@ -9,8 +10,9 @@ const websocket = require('ws').Server
 const http = require('http')
 const httpServer = http.createServer()
 const ws = new websocket({server:httpServer})
+const fs = require('fs')
 let users = [];
-let chat = [];
+let chat = require(config.file);
 function broadcast(data) {
     ws.clients.forEach(client => client.send(data));
 };
@@ -54,8 +56,13 @@ ws.on('connection',function(f){
 
         if (cmd[0] == 'chat'){
             chat.push('<b>' + user + '</b>: ' + escapeInput(cmd[1]));
+            let newfile = config.file;
+            if (newfile.startsWith("./")){
+              newfile.replace("./","");
+            }
             response = ['chat','<b>' + user + '</b>: ' + escapeInput(cmd[1])]
             broadcast(JSON.stringify(response))
+            fs.writeFileSync(newfile,JSON.stringify(chat),"utf-8")
         }
         if (cmd[0] == 'rename'){
             index = users.indexOf(user)
